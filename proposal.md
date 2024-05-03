@@ -2,10 +2,12 @@
 
 ## Description
 What am I going to build?
+- Online casino game hub/betting game
 
 ## Needs to Have List
-- Thing 1
-- Thing 2
+- Home screen where you can choose which game you would like to play
+- Bank account (not real money)
+- Graph showing your progress as in gain and loss of money
 
 ## Nice to Have List
 - Another thing
