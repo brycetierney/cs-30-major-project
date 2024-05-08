@@ -11,8 +11,8 @@ What am I going to build?
 - Games include hi-lo, plinko and mines
 - Limbo:
 - Need to create input for the: 
-bet amount
-target multilpier you want to be the minimum number that the random number must be for the bet to win. ie: if the random number generated is above your chosen number, the bet amount is multiplied by a certain amount based on how likely it is to be above your chosen number.
+Bet amount
+Target multilpier you want to be the minimum number that the random number must be for the bet to win. ie: if the random number generated is above your chosen number, the bet amount is multiplied by a certain amount based on how likely it is to be above your chosen number.
 - A randomizer for picking a number from 1.01 (super likely), 10.00 (super rare to go this high)
 - Plinko: Need to use p5play for "gravity"
 - Mines game (simplier one):
