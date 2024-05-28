@@ -7,28 +7,36 @@
 
 // Setting variables. gameState starts as the homne screen and ETCCCCC
 let gameState = "home";
+let clickSound;
 
-// Limbo preview x and y
-let limboX = width/4;
-let limboY = height/4;
+// limboPreview x and y
+let limboPreview;
+let limboX = width * 1/4;
+let limboY = height * 1/4;
+let limboSize = width * 1/4;
 
 // // Plinko preview x and y
-// let plinkoX = width/4;
-// let plinkoY = height/4;
+let plinkoPreview;
+let plinkoX = width * 3/4;
+let plinkoY = height * 1/4;
+let plinkoSize = width * 1/4;
+
 // // Mines preview x and y
-// let minesX = width/4;
-// let minesY = height/4;
+let minesPreview;
+let minesX = width * 1/4;
+let minesY = height * 3/4;
+let minesSize = width * 1/4;
 
 
 // how to get sound, need to get a click mp3 sound and use preload ETCCCCC
 
 // Loading a sound file, images for the preview screens, ETCCCCC
 function preload() {
-  sound = loadSound("WHATEVER SOUND I need to load"); // Add what you need here ETCCCCC
-  limbo = loadImage("");
+  clickSound = loadSound("WHATEVER SOUND I need to load"); // Add what you need here ETCCCCC
+  limboPreview = loadImage("limboPreview.avif");
 
-  // plinko = loadImage("");
-  // mines = loadImage("");
+  // plinkoPreview = loadImage("");
+  // minesPreview = loadImage("");
 }
 
 function setup() {
@@ -57,16 +65,16 @@ function drawHomeScreen() {
   // Make it show images by creating them in the preload function, need to download or something???
 
   // Displaying limbo preview
-  limbo(limboX, limboY, limboSize);
+  limboPreview(limboX, limboY, limboSize);
 
   // Displaying plinko preview
-  plinko(plinkoX, plinkoY, plinkoSize);
+  plinkoPreview(plinkoX, plinkoY, plinkoSize);
 
   // Displaying mines preview
-  mines(minesX, minesY, minesSize)
+  minesPreview(minesX, minesY, minesSize);
 
   // Use the button thing instead of this probably
-  if (mousePressed && mouseX > limboX - width/10 && mouseX < limboX + width/10 && mouseY > limboY - height/10 && mouseY < limboY + height/10) {
+  if (mouseIsPressed && mouseX > limboX - width/10 && mouseX < limboX + width/10 && mouseY > limboY - height/10 && mouseY < limboY + height/10) {
     gameState = "limbo";
   }
 
