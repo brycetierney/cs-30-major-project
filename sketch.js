@@ -32,11 +32,11 @@ let minesSize = width * 1/4;
 
 // Loading a sound file, images for the preview screens, ETCCCCC
 function preload() {
-  clickSound = loadSound("WHATEVER SOUND I need to load"); // Add what you need here ETCCCCC
+  clickSound = loadSound("basicClick.mp3"); // Add what you need here ETCCCCC
+  winsound = loadSound("melodyError.wav");
   limboPreview = loadImage("limboPreview.avif");
-
-  // plinkoPreview = loadImage("");
-  // minesPreview = loadImage("");
+  plinkoPreview = loadImage("plinkoPreview.jpg");
+  minesPreview = loadImage("minesPreview.jpg");
 }
 
 function setup() {
