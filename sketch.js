@@ -8,35 +8,37 @@
 // Setting variables. gameState starts as the homne screen and ETCCCCC
 let gameState = "home";
 let clickSound;
+let winSound;
 
-// limboPreview x and y
-let limboPreview;
-let limboX = width * 1/4;
-let limboY = height * 1/4;
-let limboSize = width * 1/4;
+// limboPreview x, y and size
+let limboPreviewImage;
+let limboPreviewX = width * 1/4;
+let limboPreviewY = height * 1/4;
+let limboPreviewSize = width * 1/4;
 
-// // Plinko preview x and y
-let plinkoPreview;
-let plinkoX = width * 3/4;
-let plinkoY = height * 1/4;
-let plinkoSize = width * 1/4;
+// // Plinko preview x, y and size
+let plinkoPreviewImage;
+let plinkoPreviewX = width * 3/4;
+let plinkoPreviewY = height * 1/4;
+let plinkoPreviewSize = width * 1/4;
 
-// // Mines preview x and y
-let minesPreview;
-let minesX = width * 1/4;
-let minesY = height * 3/4;
-let minesSize = width * 1/4;
+// // Mines preview x, y and size
+let minesPreviewImage;
+let minesPreviewX = width * 1/4;
+let minesPreviewY = height * 3/4;
+let minesPreviewSize = width * 1/4;
 
 
 // how to get sound, need to get a click mp3 sound and use preload ETCCCCC
 
-// Loading a sound file, images for the preview screens, ETCCCCC
+// Loading sound files and images for the preview screens, ETCCCCC
 function preload() {
   clickSound = loadSound("basicClick.mp3"); // Add what you need here ETCCCCC
-  winsound = loadSound("melodyError.wav");
-  limboPreview = loadImage("limboPreview.avif");
-  plinkoPreview = loadImage("plinkoPreview.jpg");
-  minesPreview = loadImage("minesPreview.jpg");
+  winSound = loadSound("melodyError.wav");
+
+  limboPreviewImage = loadImage("limboPreview.avif");
+  plinkoPreviewImage = loadImage("plinkoPreview.jpg");
+  minesPreviewImage = loadImage("minesPreview.jpg");
 }
 
 function setup() {
@@ -65,16 +67,16 @@ function drawHomeScreen() {
   // Make it show images by creating them in the preload function, need to download or something???
 
   // Displaying limbo preview
-  limboPreview(limboX, limboY, limboSize);
+  limboPreview(limboPreviewX, limboPreviewX, limboPreviewSize);
 
   // Displaying plinko preview
-  plinkoPreview(plinkoX, plinkoY, plinkoSize);
+  plinkoPreview(plinkoPreviewX, plinkoPreviewY, plinkoPreviewSize);
 
   // Displaying mines preview
-  minesPreview(minesX, minesY, minesSize);
+  minesPreview(minesPreviewX, minesPreviewY, minesPreviewSize);
 
   // Use the button thing instead of this probably
-  if (mouseIsPressed && mouseX > limboX - width/10 && mouseX < limboX + width/10 && mouseY > limboY - height/10 && mouseY < limboY + height/10) {
+  if (mouseIsPressed && mouseX > limboPreviewX - width/10 && mouseX < limboPreviewX + width/10 && mouseY > limboPreviewY - height/10 && mouseY < limboPreviewY + height/10) {
     gameState = "limbo";
   }
 
@@ -85,7 +87,7 @@ function darwLimboGame() {
   // Setting variables for specifically the limbo game
   let betAmount;
   let targetMultiplier;
-  // let limboX = width/4;
-  // let limboY = height/4;
+  let limboX = width/4;
+  let limboY = height/4;
 
 }
