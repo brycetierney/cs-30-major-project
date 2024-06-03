@@ -10,23 +10,26 @@ let gameState = "home";
 let clickSound;
 let winSound;
 
-// limboPreview x, y and size
+// limboPreview x, y and size x and y
 let limboPreviewImage;
-let limboPreviewX = width * 1/4;
-let limboPreviewY = height * 1/4;
-let limboPreviewSize = width * 1/4;
+let limboPreviewX = windowWidth * 1/4;
+let limboPreviewY = windowHeight * 1/4;
+let limboPreviewWidthSize = windowWidth * 1/4;
+let limboPreviewHeightSize = windowHeight * 1/4;
 
-// // Plinko preview x, y and size
+// // Plinko preview x, y and size x and y
 let plinkoPreviewImage;
-let plinkoPreviewX = width * 3/4;
-let plinkoPreviewY = height * 1/4;
-let plinkoPreviewSize = width * 1/4;
+let plinkoPreviewX = windowWidth * 3/4;
+let plinkoPreviewY = windowHeight * 1/4;
+let plinkoPreviewWidthSize = windowWidth * 1/4;
+let plinkoPreviewHeightSize = windowHeight * 1/4;
 
-// // Mines preview x, y and size
+// // Mines preview x, y and size x and y
 let minesPreviewImage;
-let minesPreviewX = width * 1/4;
-let minesPreviewY = height * 3/4;
-let minesPreviewSize = width * 1/4;
+let minesPreviewX = windowWidth * 1/4;
+let minesPreviewY = windowHeight * 3/4;
+let minesPreviewWidthSize = windowWidth * 1/4;
+let minesPreviewHeightSize = windowHeight * 1/4;
 
 
 // how to get sound, need to get a click mp3 sound and use preload ETCCCCC
@@ -51,8 +54,8 @@ function draw() {
   if (gameState === "home") {
     drawHomeScreen();
   }
-  if (gameState === "limbo") { 
-    darwLimboGame();
+  if (gameState === "limbo") {
+    drawLimboGame();
   }
   if (gameState === "plinko") {
     drawPlinkoGame();
@@ -67,27 +70,27 @@ function drawHomeScreen() {
   // Make it show images by creating them in the preload function, need to download or something???
 
   // Displaying limbo preview
-  limboPreview(limboPreviewX, limboPreviewX, limboPreviewSize);
+  image(limboPreviewImage, limboPreviewX, limboPreviewY, limboPreviewWidthSize, limboPreviewHeightSize);
 
   // Displaying plinko preview
-  plinkoPreview(plinkoPreviewX, plinkoPreviewY, plinkoPreviewSize);
+  image(plinkoPreviewImage, plinkoPreviewX, plinkoPreviewY, plinkoPreviewWidthSize, plinkoPreviewHeightSize);
 
   // Displaying mines preview
-  minesPreview(minesPreviewX, minesPreviewY, minesPreviewSize);
+  image(minesPreviewImage, minesPreviewX, minesPreviewY, minesPreviewWidthSize, minesPreviewHeightSize);
 
   // Use the button thing instead of this probably
-  if (mouseIsPressed && mouseX > limboPreviewX - width/10 && mouseX < limboPreviewX + width/10 && mouseY > limboPreviewY - height/10 && mouseY < limboPreviewY + height/10) {
+  if (mouseIsPressed && mouseX > limboPreviewX - windowWidth/10 && mouseX < limboPreviewX + windowWidth/10 && mouseY > limboPreviewY - windowHeight/10 && mouseY < limboPreviewY + windowHeight/10) {
     gameState = "limbo";
   }
 
 }
 
 
-function darwLimboGame() {
+function drawLimboGame() {
   // Setting variables for specifically the limbo game
   let betAmount;
   let targetMultiplier;
-  let limboX = width/4;
-  let limboY = height/4;
+  let limboX = windowWidth * 1/4;
+  let limboY = windowHeight * 1/4;
 
 }
