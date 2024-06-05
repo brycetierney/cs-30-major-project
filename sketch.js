@@ -10,26 +10,14 @@ let gameState = "home";
 let clickSound;
 let winSound;
 
-// limboPreview x, y and size x and y
+// Preview variables
 let limboPreviewImage;
-let limboPreviewX = windowWidth * 1/4;
-let limboPreviewY = windowHeight * 1/4;
-let limboPreviewWidthSize = windowWidth * 1/4;
-let limboPreviewHeightSize = windowHeight * 1/4;
-
-// // Plinko preview x, y and size x and y
 let plinkoPreviewImage;
-let plinkoPreviewX = windowWidth * 3/4;
-let plinkoPreviewY = windowHeight * 1/4;
-let plinkoPreviewWidthSize = windowWidth * 1/4;
-let plinkoPreviewHeightSize = windowHeight * 1/4;
-
-// // Mines preview x, y and size x and y
 let minesPreviewImage;
-let minesPreviewX = windowWidth * 1/4;
-let minesPreviewY = windowHeight * 3/4;
-let minesPreviewWidthSize = windowWidth * 1/4;
-let minesPreviewHeightSize = windowHeight * 1/4;
+
+let limboPreviewX, limboPreviewY, limboPreviewWidthSize, limboPreviewHeightSize;
+let plinkoPreviewX, plinkoPreviewY, plinkoPreviewWidthSize, plinkoPreviewHeightSize;
+let minesPreviewX, minesPreviewY, minesPreviewWidthSize, minesPreviewHeightSize;
 
 
 // how to get sound, need to get a click mp3 sound and use preload ETCCCCC
@@ -41,11 +29,12 @@ function preload() {
 
   limboPreviewImage = loadImage("limboPreview.avif");
   plinkoPreviewImage = loadImage("plinkoPreview.jpg");
-  minesPreviewImage = loadImage("minesPreview.jpg");
+  minesPreviewImage = loadImage("minesBryce.jpeg");
 }
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
+  updatePreviewSizesAndPositions();
 }
 
 // Displaying whichever game you clicked, at the start it is homeScreen
@@ -90,7 +79,29 @@ function drawLimboGame() {
   // Setting variables for specifically the limbo game
   let betAmount;
   let targetMultiplier;
-  let limboX = windowWidth * 1/4;
-  let limboY = windowHeight * 1/4;
+
+
+  //make it so that the other 2 previews use recursion to leave
+}
+
+
+function updatePreviewSizesAndPositions() {
+  // Update limbo preview sizes and portions
+  limboPreviewX = windowWidth * 1/4;
+  limboPreviewY = windowHeight * 1/4;
+  limboPreviewWidthSize = windowWidth * 1/4;
+  limboPreviewHeightSize = windowHeight * 1/4;
+
+  // Update limbo preview sizes and portions
+  plinkoPreviewX = windowWidth * 0.6;
+  plinkoPreviewY = windowHeight * 0.45;
+  plinkoPreviewWidthSize = windowWidth * .35;
+  plinkoPreviewHeightSize = windowHeight * .5;
+
+  // Update limbo preview sizes and portions
+  minesPreviewX = windowWidth * 1/4;
+  minesPreviewY = windowHeight * 3/4;
+  minesPreviewWidthSize = windowWidth * 1/4;
+  minesPreviewHeightSize = windowHeight * 1/4;
 
 }
