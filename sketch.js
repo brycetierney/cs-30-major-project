@@ -19,6 +19,26 @@ let limboPreviewX, limboPreviewY, limboPreviewWidthSize, limboPreviewHeightSize;
 let plinkoPreviewX, plinkoPreviewY, plinkoPreviewWidthSize, plinkoPreviewHeightSize;
 let minesPreviewX, minesPreviewY, minesPreviewWidthSize, minesPreviewHeightSize;
 
+// Limbo game variables
+let betAmount = 0;
+let targetMultiplier = 1.0;
+let displayedNumber = 1.00;
+let isBetPlaced = false;
+let gameOver = false;
+let winChance = 0;
+let payout = 0;
+let bank = 1000; // Initial bank amount
+
+
+// html inputs
+let betAmountInput, targetMultiplierInput;
+
+
+// Plinko game variables
+
+
+// Mines game variables
+
 
 // how to get sound, need to get a click mp3 sound and use preload ETCCCCC
 
@@ -35,7 +55,38 @@ function preload() {
 function setup() {
   createCanvas(windowWidth, windowHeight);
   updatePreviewSizesAndPositions();
+  window.addEventListener('resize', () => {
+    resizeCanvas(windowWidth, windowHeight);
+    updatePreviewSizesAndPositions();
+  });
+
+  // Create the input locations
+  betAmountInput = createInput("");
+  betAmountInput.position(windowWidth * 1/4, windowHeight * 1/2 - 50);
+  betAmountInput.size(125);
+  betAmountInput.input(updateValues);
+
+  targetMultiplierInput = createInput("");
+  targetMultiplierInput.position(windowWidth * 1/4, windowHeight * 1/2);
+  targetMultiplierInput.size(125);
+  targetMultiplierInput.input(updateValues);
+
+  betAmountInput.hide();
+  targetMultiplierInput.hide();
 }
+
+function updateValues() {
+  betAmount = parseFloat(betAmountInput.value()) || 0;
+  targetMultiplier = parseFloat(targetMultiplierInput.value()) || 1.0;
+  winChance = (1 / targetMultiplier) * 100;
+  payout = betAmount * targetMultiplier;
+
+  if (betAmount > bank) {
+    betAmount = bank;
+    betAmountInput.value(bank);
+  }
+}
+
 
 // Displaying whichever game you clicked, at the start it is homeScreen
 function draw() {
@@ -56,7 +107,8 @@ function draw() {
 
 
 function drawHomeScreen() {
-  // Make it show images by creating them in the preload function, need to download or something???
+  // setting gradient values
+  setGradient(0, 0, width, height, color(0, 120, 255), color(255, 255, 255));
 
   // Displaying limbo preview
   image(limboPreviewImage, limboPreviewX, limboPreviewY, limboPreviewWidthSize, limboPreviewHeightSize);
@@ -66,23 +118,102 @@ function drawHomeScreen() {
 
   // Displaying mines preview
   image(minesPreviewImage, minesPreviewX, minesPreviewY, minesPreviewWidthSize, minesPreviewHeightSize);
+}
 
-  // Use the button thing instead of this probably
-  if (mouseIsPressed && mouseX > limboPreviewX - windowWidth/10 && mouseX < limboPreviewX + windowWidth/10 && mouseY > limboPreviewY - windowHeight/10 && mouseY < limboPreviewY + windowHeight/10) {
+// Add the Max Liu special (a gradient)
+function setGradient(x, y, w, h, c1, c2) {
+  for (let i = y; i <= y + h; i++) {
+    let inter = map(i, y, y + h, 0, 1);
+    let c = lerpColor(c2, c2, inter);
+    stroke(c);
+    line(x, i, x + w, i);
+  }
+}
+
+
+// Determining if a game's preview has been pressed, if so, take you to that game's screen
+function mousePressed() {
+  if (mouseX > limboPreviewX && mouseX < limboPreviewX + limboPreviewWidthSize &&
+      mouseY > limboPreviewY && mouseY < limboPreviewY + limboPreviewHeightSize) {
     gameState = "limbo";
   }
-
 }
 
 
 function drawLimboGame() {
-  // Setting variables for specifically the limbo game
-  let betAmount;
-  let targetMultiplier;
+  // Add Max Liu color
+  setGradient(0, 0, width, height, color(255, 200, 0), color(255, 255, 255));
 
+  textSize(32);
+  textAlign(CENTER, CENTER);
 
-  //make it so that the other 2 previews use recursion to leave
+  if (!isBetPlaced) {
+    betAmountInput.show();
+    targetMultiplierInput.show();
+
+    textSize(25);
+    textAlign(LEFT);
+    text("Bet Amount:", windowWidth * 1/4 - 100, windowHeight * 1/2 - 30);
+    text("Target Multiplier: " + displayedNumber.toFixed(2), windowWidth * 1/2, windowHeight * 1/2);
+    text("Displayed Number: " + displayedNumber.toFixed(2), windowWidth * 1/2, windowHeight * 1/3);
+    text("Win Chance : " + winChance.toFixed(2) + "%", windowHeight * 1/4, windowHeight * 1/2 + 70);
+    text("Profit to Win: $" + payout.toFixed(2), windowWidth * 1/4, windowHeight * 1/2 + 100);
+    text("Bank: $ " + bank.toFixed(2), windowWidth * 1/14, windowHeight * 1/10)
+
+    textAlign(CENTER);
+    textSize(50);
+    text(displayedNumber.toFixed(2), windowWidth * 3/4, windowHeight * 1/2);
+
+    if (keyIsPressed && key === "Enter") {
+      if (betAmount <= bank && betAmount > 0) {
+        bank -= betAmount;
+        isBetPlaced = true;
+        gameOver = false;
+        displayedNumber = 1.00;
+        betAmountInput.hide();
+        targetMultiplierInput.hide();
+      }
+      else {
+        textSize(25);
+        fill(255, 0, 0);
+        text("Imsufficient Funds :(", width * 1/2, height * 1/2 + 80);
+        noFill();
+      }
+    }
+  }
+    else if (!gameOver) {
+      displayedNumber += 0.01; // Simulating multiplier increase
+      textSize(50);
+      text(displayedNumber.toFixed(2), windowWidth * 3/4, windowHeight * 1/2);
+
+    if (mouseIsPressed) {
+      let nextNumber = random(1.0, 100.0);
+      text("Next Number: " + nextNumber.toFixed(2), width * 1/2, height * 3/4);
+
+      gameOver = true;
+      if (nextNumber >= targetMultiplier) {
+        winSound.play();
+        let winnings = betAmount * targetMultiplier;
+        bank += winnings;
+        text("You Win! " + targetMultiplier.toFixed(2) + " X " + targetMultiplier.toFixed(2) + "x", width * 1/2, height * 1/2 + 50);
+      }
+      else {
+        text("you lose...", width * 1/2, height * 1/2 + 50);
+      }
+    }
+  }
+  else {
+    text("Displayed Number: " + displayedNumber.toFixed(2), width * 1/2, height * 1/4);
+    text("Click to Play Again", width * 1/2, height * 1/2);
+    if (mouseIsPressed) {
+      isBetPlaced = false;
+      betAmountInput.show();
+      targetMultiplierInput.show();
+    }
+  }
 }
+
+//make it so that the other 2 previews use recursion to leave
 
 
 function updatePreviewSizesAndPositions() {
