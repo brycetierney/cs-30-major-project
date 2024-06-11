@@ -60,20 +60,40 @@ function setup() {
     updatePreviewSizesAndPositions();
   });
 
-  // Create the input locations
+  // Creating the bet iunput location
   betAmountInput = createInput("");
-  betAmountInput.position(windowWidth * 1/4, windowHeight * 1/2 - 50);
+  betAmountInput.position(windowWidth * 1/10, windowHeight * 1/3 + 20);
   betAmountInput.size(125);
   betAmountInput.input(updateValues);
 
   targetMultiplierInput = createInput("");
-  targetMultiplierInput.position(windowWidth * 1/4, windowHeight * 1/2);
+  targetMultiplierInput.position(windowWidth * 1/10, windowHeight * 1/2 + 20);
   targetMultiplierInput.size(125);
   targetMultiplierInput.input(updateValues);
 
+  // Create betting buttons
+  betButton = createButton('Bet');
+  betButton.position(windowWidth * 1/10, windowHeight * 2/3 + 20);
+  betButton.size(125);
+  betButton.mousePressed(placeBet);
+
   betAmountInput.hide();
   targetMultiplierInput.hide();
+  betButton.hide();
 }
+
+function placeBet() {
+  if (betAmount <= bank && betAmount > 0) {
+    bank -= betAmount;
+    isBetPlaced = true;
+    gameOver = false;
+    displayedNumber = 1.00;
+    betAmountInput.hide();
+    targetMultiplierInput.hide();
+    betButton.hide();
+  }
+}
+
 
 function updateValues() {
   betAmount = parseFloat(betAmountInput.value()) || 0;
@@ -108,7 +128,7 @@ function draw() {
 
 function drawHomeScreen() {
   // setting gradient values
-  setGradient(0, 0, width, height, color(0, 120, 255), color(255, 255, 255));
+  setGradient(0, 0, width, height, color(0, 128, 255), color(255, 255, 255));
 
   // Displaying limbo preview
   image(limboPreviewImage, limboPreviewX, limboPreviewY, limboPreviewWidthSize, limboPreviewHeightSize);
@@ -122,9 +142,11 @@ function drawHomeScreen() {
 
 // Add the Max Liu special (a gradient)
 function setGradient(x, y, w, h, c1, c2) {
+  noFill();
+  
   for (let i = y; i <= y + h; i++) {
     let inter = map(i, y, y + h, 0, 1);
-    let c = lerpColor(c2, c2, inter);
+    let c = lerpColor(c1, c2, inter);
     stroke(c);
     line(x, i, x + w, i);
   }
@@ -143,7 +165,7 @@ function mousePressed() {
 
 function drawLimboGame() {
   // Add Max Liu color
-  setGradient(0, 0, width, height, color(255, 200, 0), color(255, 255, 255));
+  setGradient(0, 0, width, height, color(255, 204, 0), color(255, 255, 255));
 
   textSize(32);
   textAlign(CENTER, CENTER);
@@ -151,15 +173,18 @@ function drawLimboGame() {
   if (!isBetPlaced) {
     betAmountInput.show();
     targetMultiplierInput.show();
+    betButton.show();
 
+
+    // Bet amount
     textSize(25);
     textAlign(LEFT);
     text("Bet Amount:", windowWidth * 1/4 - 100, windowHeight * 1/2 - 30);
-    text("Target Multiplier: " + displayedNumber.toFixed(2), windowWidth * 1/2, windowHeight * 1/2);
-    text("Displayed Number: " + displayedNumber.toFixed(2), windowWidth * 1/2, windowHeight * 1/3);
-    text("Win Chance : " + winChance.toFixed(2) + "%", windowHeight * 1/4, windowHeight * 1/2 + 70);
-    text("Profit to Win: $" + payout.toFixed(2), windowWidth * 1/4, windowHeight * 1/2 + 100);
-    text("Bank: $ " + bank.toFixed(2), windowWidth * 1/14, windowHeight * 1/10)
+    text("Target Multiplier:", windowWidth * 1/4 - 150, windowHeight * 1/2);
+    text("Displayed Number: " + displayedNumber.toFixed(2), windowWidth * 1/2, windowHeight * 1/2);
+    text("Win Chance: " + winChance.toFixed(2) + "%", windowWidth * 1/4, windowHeight * 1/2 + 70);
+    text("Payout: $" + payout.toFixed(2), windowWidth * 1/4, windowHeight * 1/2 + 100);
+    text("Bank: $" + bank.toFixed(2), windowWidth * 1/4, windowHeight * 1/2 + 130);
 
     textAlign(CENTER);
     textSize(50);
@@ -177,13 +202,13 @@ function drawLimboGame() {
       else {
         textSize(25);
         fill(255, 0, 0);
-        text("Imsufficient Funds :(", width * 1/2, height * 1/2 + 80);
+        text("Insufficient Funds :(", width * 1/2, height * 1/2 + 80);
         noFill();
       }
     }
   }
     else if (!gameOver) {
-      displayedNumber += 0.01; // Simulating multiplier increase
+      displayedNumber += 0.01; // Displaying multiplier increase
       textSize(50);
       text(displayedNumber.toFixed(2), windowWidth * 3/4, windowHeight * 1/2);
 
@@ -197,8 +222,7 @@ function drawLimboGame() {
         let winnings = betAmount * targetMultiplier;
         bank += winnings;
         text("You Win! " + targetMultiplier.toFixed(2) + " X " + targetMultiplier.toFixed(2) + "x", width * 1/2, height * 1/2 + 50);
-      }
-      else {
+      } else {
         text("you lose...", width * 1/2, height * 1/2 + 50);
       }
     }
