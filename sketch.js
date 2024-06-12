@@ -23,11 +23,13 @@ let minesPreviewX, minesPreviewY, minesPreviewWidthSize, minesPreviewHeightSize;
 let betAmount = 0;
 let targetMultiplier = 1.0;
 let displayedNumber = 1.00;
+let nextNumber = 1.00;
 let isBetPlaced = false;
 let gameOver = false;
 let winChance = 0;
 let payout = 0;
 let bank = 1000; // Initial bank amount
+
 
 
 // html inputs
@@ -88,6 +90,7 @@ function placeBet() {
     isBetPlaced = true;
     gameOver = false;
     displayedNumber = 1.00;
+    nextNumber = random(1.0, 100.0); // Set the next number
     betAmountInput.hide();
     targetMultiplierInput.hide();
     betButton.hide();
@@ -140,10 +143,9 @@ function drawHomeScreen() {
   image(minesPreviewImage, minesPreviewX, minesPreviewY, minesPreviewWidthSize, minesPreviewHeightSize);
 }
 
-// Add the Max Liu special (a gradient)
+// Add a gradient for background
 function setGradient(x, y, w, h, c1, c2) {
   noFill();
-  
   for (let i = y; i <= y + h; i++) {
     let inter = map(i, y, y + h, 0, 1);
     let c = lerpColor(c1, c2, inter);
@@ -164,7 +166,7 @@ function mousePressed() {
 
 
 function drawLimboGame() {
-  // Add Max Liu color
+  // Add color
   setGradient(0, 0, width, height, color(255, 204, 0), color(255, 255, 255));
 
   textSize(32);
@@ -179,61 +181,66 @@ function drawLimboGame() {
     // Bet amount
     textSize(25);
     textAlign(LEFT);
-    text("Bet Amount:", windowWidth * 1/4 - 100, windowHeight * 1/2 - 30);
-    text("Target Multiplier:", windowWidth * 1/4 - 150, windowHeight * 1/2);
-    text("Displayed Number: " + displayedNumber.toFixed(2), windowWidth * 1/2, windowHeight * 1/2);
-    text("Win Chance: " + winChance.toFixed(2) + "%", windowWidth * 1/4, windowHeight * 1/2 + 70);
-    text("Payout: $" + payout.toFixed(2), windowWidth * 1/4, windowHeight * 1/2 + 100);
-    text("Bank: $" + bank.toFixed(2), windowWidth * 1/4, windowHeight * 1/2 + 130);
+    fill(0);
+    text("Bet Amount:", windowWidth * 1/10, windowHeight * 1/3 - 30);
+    text("Target Multiplier:", windowWidth * 1/10, windowHeight * 1/2 - 20);
 
-    textAlign(CENTER);
+    // Profit to win
+    text("Profit to Win: $" + payout.toFixed(2), windowWidth * 1/4, windowHeight * 1/2 + 100);
+
+    // Display number on the "big screen"
+    fill(255);
+    rect(windowWidth * 1/2 - 150, windowHeight * 1/3 - 50, 300, 200, 20);
+    fill(0);
     textSize(50);
-    text(displayedNumber.toFixed(2), windowWidth * 3/4, windowHeight * 1/2);
+    text(displayedNumber.toFixed(2), windowWidth * 1/2, windowHeight * 1/3 + 50);
+
+    // Target Multiplier
+    textSize(20);
+    textAlign(LEFT);
+    text("Target Multiplier: " + targetMultiplier.toFixed(2), windowWidth * 1/2 - 150, windowHeight * 1/3 + 180);
+
+    // Win Chance %
+    textAlign(RIGHT);
+    text("Win Chance: " + winChance.toFixed(2) + "%", windowWidth * 1/2 + 150, windowHeight * 1/3 + 180);
+
+    // Bank Display
+    textSize(25);
+    textAlign(CENTER);
+    text("Bank: $" + bank.toFixed(2), windowWidth * 1/2, windowHeight * 1/8);
+
 
     if (keyIsPressed && key === "Enter") {
-      if (betAmount <= bank && betAmount > 0) {
-        bank -= betAmount;
-        isBetPlaced = true;
-        gameOver = false;
-        displayedNumber = 1.00;
-        betAmountInput.hide();
-        targetMultiplierInput.hide();
-      }
-      else {
-        textSize(25);
-        fill(255, 0, 0);
-        text("Insufficient Funds :(", width * 1/2, height * 1/2 + 80);
-        noFill();
-      }
+      placeBet();
     }
   }
-    else if (!gameOver) {
-      displayedNumber += 0.01; // Displaying multiplier increase
-      textSize(50);
-      text(displayedNumber.toFixed(2), windowWidth * 3/4, windowHeight * 1/2);
+  else if (!gameOver) {
+    displayedNumber = min(displayedNumber + 0.05, nextNumber); // Increment the displayed number until it reaches nextNumber
+    fill(255);
+    rect(windowWidth * 1/2 - 150, windowHeight * 1/3 - 50, 300, 200, 20);
+    fill(0);
+    textSize(50);
+    text(displayedNumber.toFixed(2), windowWidth * 1/2, windowHeight * 1/3 + 50);
 
-    if (mouseIsPressed) {
-      let nextNumber = random(1.0, 100.0);
-      text("Next Number: " + nextNumber.toFixed(2), width * 1/2, height * 3/4);
-
+    if (displayedNumber >= nextNumber) {
       gameOver = true;
       if (nextNumber >= targetMultiplier) {
         winSound.play();
         let winnings = betAmount * targetMultiplier;
         bank += winnings;
-        text("You Win! " + targetMultiplier.toFixed(2) + " X " + targetMultiplier.toFixed(2) + "x", width * 1/2, height * 1/2 + 50);
+        text("You Win! " + targetMultiplier.toFixed(2) + " X " + targetMultiplier.toFixed(2) + "x", windowWidth * 1/2, windowHeight * 1/2 + 50);
       } else {
-        text("you lose...", width * 1/2, height * 1/2 + 50);
+        text("You Lose...", windowWidth * 1/2, windowHeight * 1/2 + 50);
       }
     }
-  }
-  else {
+  } else {
     text("Displayed Number: " + displayedNumber.toFixed(2), width * 1/2, height * 1/4);
     text("Click to Play Again", width * 1/2, height * 1/2);
     if (mouseIsPressed) {
       isBetPlaced = false;
       betAmountInput.show();
       targetMultiplierInput.show();
+      betButton.show();
     }
   }
 }
@@ -242,22 +249,21 @@ function drawLimboGame() {
 
 
 function updatePreviewSizesAndPositions() {
-  // Update limbo preview sizes and portions
-  limboPreviewX = windowWidth * 1/4;
+  // Update limbo preview sizes and positions
+  limboPreviewX = windowWidth * 1/6;
   limboPreviewY = windowHeight * 1/4;
-  limboPreviewWidthSize = windowWidth * 1/4;
+  limboPreviewWidthSize = windowWidth * 1/6;
   limboPreviewHeightSize = windowHeight * 1/4;
 
-  // Update limbo preview sizes and portions
-  plinkoPreviewX = windowWidth * 0.6;
-  plinkoPreviewY = windowHeight * 0.45;
-  plinkoPreviewWidthSize = windowWidth * .35;
-  plinkoPreviewHeightSize = windowHeight * .5;
+  // Update plinko preview sizes and positions
+  plinkoPreviewX = windowWidth * 1/2 - windowWidth * 1/12;
+  plinkoPreviewY = windowHeight * 1/4;
+  plinkoPreviewWidthSize = windowWidth * 1/6;
+  plinkoPreviewHeightSize = windowHeight * 1/4;
 
-  // Update limbo preview sizes and portions
-  minesPreviewX = windowWidth * 1/4;
-  minesPreviewY = windowHeight * 3/4;
-  minesPreviewWidthSize = windowWidth * 1/4;
+  // Update mines preview sizes and positions
+  minesPreviewX = windowWidth * 5/6 - windowWidth * 1/6;
+  minesPreviewY = windowHeight * 1/4;
+  minesPreviewWidthSize = windowWidth * 1/6;
   minesPreviewHeightSize = windowHeight * 1/4;
-
 }
