@@ -34,7 +34,7 @@ let bank = 1000; // Initial bank amount
 
 // html inputs
 let betAmountInput, targetMultiplierInput;
-
+let betButton;
 
 // Plinko game variables
 
@@ -57,6 +57,8 @@ function preload() {
 function setup() {
   createCanvas(windowWidth, windowHeight);
   updatePreviewSizesAndPositions();
+  
+  // Update canvas size on window resize
   window.addEventListener('resize', () => {
     resizeCanvas(windowWidth, windowHeight);
     updatePreviewSizesAndPositions();
@@ -68,6 +70,7 @@ function setup() {
   betAmountInput.size(125);
   betAmountInput.input(updateValues);
 
+  // Creating the target multiplier input location
   targetMultiplierInput = createInput("");
   targetMultiplierInput.position(windowWidth * 1/10, windowHeight * 1/2 + 20);
   targetMultiplierInput.size(125);
@@ -79,11 +82,13 @@ function setup() {
   betButton.size(125);
   betButton.mousePressed(placeBet);
 
+  // Initially hide inputs and button
   betAmountInput.hide();
   targetMultiplierInput.hide();
   betButton.hide();
 }
 
+// Place bet function
 function placeBet() {
   if (betAmount <= bank && betAmount > 0) {
     bank -= betAmount;
@@ -97,7 +102,7 @@ function placeBet() {
   }
 }
 
-
+// Update values from input fields
 function updateValues() {
   betAmount = parseFloat(betAmountInput.value()) || 0;
   targetMultiplier = parseFloat(targetMultiplierInput.value()) || 1.0;
@@ -129,17 +134,13 @@ function draw() {
 }
 
 
+// Draw home screen with game previews
 function drawHomeScreen() {
-  // setting gradient values
   setGradient(0, 0, width, height, color(0, 128, 255), color(255, 255, 255));
-
-  // Displaying limbo preview
+  
+  // Displaying game previews
   image(limboPreviewImage, limboPreviewX, limboPreviewY, limboPreviewWidthSize, limboPreviewHeightSize);
-
-  // Displaying plinko preview
   image(plinkoPreviewImage, plinkoPreviewX, plinkoPreviewY, plinkoPreviewWidthSize, plinkoPreviewHeightSize);
-
-  // Displaying mines preview
   image(minesPreviewImage, minesPreviewX, minesPreviewY, minesPreviewWidthSize, minesPreviewHeightSize);
 }
 
@@ -165,8 +166,8 @@ function mousePressed() {
 }
 
 
+// Draw Limbo game screen
 function drawLimboGame() {
-  // Add color
   setGradient(0, 0, width, height, color(255, 204, 0), color(255, 255, 255));
 
   textSize(32);
@@ -177,8 +178,7 @@ function drawLimboGame() {
     targetMultiplierInput.show();
     betButton.show();
 
-
-    // Bet amount
+    // Display input fields and labels
     textSize(25);
     textAlign(LEFT);
     fill(0);
@@ -208,14 +208,12 @@ function drawLimboGame() {
     textSize(25);
     textAlign(CENTER);
     text("Bank: $" + bank.toFixed(2), windowWidth * 1/2, windowHeight * 1/8);
-
-
     if (keyIsPressed && key === "Enter") {
       placeBet();
     }
   }
   else if (!gameOver) {
-    displayedNumber = min(displayedNumber + 0.05, nextNumber); // Increment the displayed number until it reaches nextNumber
+    displayedNumber = min(displayedNumber + 0.05, nextNumber); // Increment displayed number
     fill(255);
     rect(windowWidth * 1/2 - 150, windowHeight * 1/3 - 50, 300, 200, 20);
     fill(0);
@@ -245,23 +243,18 @@ function drawLimboGame() {
   }
 }
 
-//make it so that the other 2 previews use recursion to leave
-
-
+// Update sizes and positions of game previews
 function updatePreviewSizesAndPositions() {
-  // Update limbo preview sizes and positions
   limboPreviewX = windowWidth * 1/6;
   limboPreviewY = windowHeight * 1/4;
   limboPreviewWidthSize = windowWidth * 1/6;
   limboPreviewHeightSize = windowHeight * 1/4;
 
-  // Update plinko preview sizes and positions
   plinkoPreviewX = windowWidth * 1/2 - windowWidth * 1/12;
   plinkoPreviewY = windowHeight * 1/4;
   plinkoPreviewWidthSize = windowWidth * 1/6;
   plinkoPreviewHeightSize = windowHeight * 1/4;
 
-  // Update mines preview sizes and positions
   minesPreviewX = windowWidth * 5/6 - windowWidth * 1/6;
   minesPreviewY = windowHeight * 1/4;
   minesPreviewWidthSize = windowWidth * 1/6;
