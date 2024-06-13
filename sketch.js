@@ -26,7 +26,7 @@ let payout = 0;
 let bank = 1000; // Initial bank amount
 
 // HTML inputs and buttons
-let betAmountInput, targetMultiplierInput, betButton, halfBetButton, doubleBetButton;
+let betAmountInput, targetMultiplierInput, betButton, halfBetButton, doubleBetButton, halfMultiplierButton, doubleMultiplierButton;
 
 // Preload sound files and images for the preview screens
 function preload() {
@@ -50,19 +50,19 @@ function setup() {
 
   // Creating the bet input location
   betAmountInput = createInput("");
-  betAmountInput.position(windowWidth * 0.1, windowHeight * 0.7);
+  betAmountInput.position(windowWidth * 0.25, windowHeight * 0.7);
   betAmountInput.size(100);
   betAmountInput.input(updateValues);
 
   // Creating the target multiplier input location
   targetMultiplierInput = createInput("");
-  targetMultiplierInput.position(windowWidth * 0.3, windowHeight * 0.7);
+  targetMultiplierInput.position(windowWidth * 0.25, windowHeight * 0.8);
   targetMultiplierInput.size(100);
   targetMultiplierInput.input(updateValues);
 
   // Creating the bet button
   betButton = createButton('Place Bet');
-  betButton.position(windowWidth * 0.55, windowHeight * 0.7);
+  betButton.position(windowWidth * 0.55, windowHeight * 0.75);
   betButton.size(100, 50);
   betButton.style('background-color', '#4CAF50'); // Green button
   betButton.style('color', 'white');
@@ -70,15 +70,27 @@ function setup() {
 
   // Creating the 1/2 bet button
   halfBetButton = createButton('1/2');
-  halfBetButton.position(windowWidth * 0.2, windowHeight * 0.7);
+  halfBetButton.position(windowWidth * 0.35, windowHeight * 0.7);
   halfBetButton.size(50, 50);
   halfBetButton.mousePressed(halfBet);
 
   // Creating the X2 bet button
   doubleBetButton = createButton('X2');
-  doubleBetButton.position(windowWidth * 0.25, windowHeight * 0.7);
+  doubleBetButton.position(windowWidth * 0.4, windowHeight * 0.7);
   doubleBetButton.size(50, 50);
   doubleBetButton.mousePressed(doubleBet);
+
+  // Creating the 1/2 multiplier button
+  halfMultiplierButton = createButton('1/2');
+  halfMultiplierButton.position(windowWidth * 0.35, windowHeight * 0.8);
+  halfMultiplierButton.size(50, 50);
+  halfMultiplierButton.mousePressed(halfMultiplier);
+
+  // Creating the X2 multiplier button
+  doubleMultiplierButton = createButton('X2');
+  doubleMultiplierButton.position(windowWidth * 0.4, windowHeight * 0.8);
+  doubleMultiplierButton.size(50, 50);
+  doubleMultiplierButton.mousePressed(doubleMultiplier);
 
   // Initially hide inputs and buttons
   betAmountInput.hide();
@@ -86,6 +98,8 @@ function setup() {
   betButton.hide();
   halfBetButton.hide();
   doubleBetButton.hide();
+  halfMultiplierButton.hide();
+  doubleMultiplierButton.hide();
 }
 
 // Place bet function
@@ -101,6 +115,8 @@ function placeBet() {
     betButton.hide();
     halfBetButton.hide();
     doubleBetButton.hide();
+    halfMultiplierButton.hide();
+    doubleMultiplierButton.hide();
   }
 }
 
@@ -130,6 +146,22 @@ function doubleBet() {
   betAmount = parseFloat(betAmountInput.value()) || 0;
   betAmount *= 2;
   betAmountInput.value(betAmount.toFixed(2));
+  updateValues();
+}
+
+// Halve the target multiplier
+function halfMultiplier() {
+  targetMultiplier = parseFloat(targetMultiplierInput.value()) || 1.0;
+  targetMultiplier /= 2;
+  targetMultiplierInput.value(targetMultiplier.toFixed(2));
+  updateValues();
+}
+
+// Double the target multiplier
+function doubleMultiplier() {
+  targetMultiplier = parseFloat(targetMultiplierInput.value()) || 1.0;
+  targetMultiplier *= 2;
+  targetMultiplierInput.value(targetMultiplier.toFixed(2));
   updateValues();
 }
 
@@ -187,16 +219,19 @@ function drawLimboGame() {
     betButton.show();
     halfBetButton.show();
     doubleBetButton.show();
+    halfMultiplierButton.show();
+    doubleMultiplierButton.show();
 
     // Display input fields and labels
     textSize(25);
     textAlign(LEFT);
     fill(0);
-    text("Bet Amount:", windowWidth * 0.1, windowHeight * 0.65 - 20);
-    text("Target Multiplier:", windowWidth * 0.3, windowHeight * 0.65 - 20);
+    text("Bet Amount:", windowWidth * 0.1, windowHeight * 0.71);
+    text("Target Multiplier:", windowWidth * 0.1, windowHeight * 0.81);
 
     // Profit to win
-    text("Profit to Win: $" + payout.toFixed(2), windowWidth * 0.4, windowHeight * 0.8);
+    textAlign(CENTER);
+    text("Profit to Win: $" + payout.toFixed(2), windowWidth * 0.4, windowHeight * 0.85);
 
     // Display number on the "big screen"
     fill(255);
@@ -205,12 +240,10 @@ function drawLimboGame() {
     textSize(50);
     text(displayedNumber.toFixed(2), windowWidth * 0.5, windowHeight * 0.3 + 50);
 
-    // Target Multiplier
+    // Target Multiplier and Win Chance
     textSize(20);
     textAlign(LEFT);
     text("Target Multiplier: " + targetMultiplier.toFixed(2), windowWidth * 0.5 - 150, windowHeight * 0.3 + 180);
-
-    // Win Chance %
     textAlign(RIGHT);
     text("Win Chance: " + winChance.toFixed(2) + "%", windowWidth * 0.5 + 150, windowHeight * 0.3 + 180);
 
@@ -223,7 +256,7 @@ function drawLimboGame() {
       placeBet();
     }
   } else if (!gameOver) {
-    displayedNumber = min(displayedNumber + 0.05, nextNumber); // Increment displayed number
+    displayedNumber = min(displayedNumber + 0.05, nextNumber); // Increment the displayed number until it reaches nextNumber
     fill(255);
     rect(windowWidth * 0.5 - 150, windowHeight * 0.3 - 50, 300, 200, 20);
     fill(0);
@@ -251,6 +284,8 @@ function drawLimboGame() {
       betButton.show();
       halfBetButton.show();
       doubleBetButton.show();
+      halfMultiplierButton.show();
+      doubleMultiplierButton.show();
     }
   }
 }
@@ -270,20 +305,20 @@ function drawMinesGame() {
 // Update preview sizes and positions based on window size
 function updatePreviewSizesAndPositions() {
   // Update limbo preview sizes and positions
-  limboPreviewX = windowWidth * 1/6;
-  limboPreviewY = windowHeight * 1/4;
-  limboPreviewWidthSize = windowWidth * 1/6;
-  limboPreviewHeightSize = windowHeight * 1/4;
+  limboPreviewX = windowWidth * 0.15;
+  limboPreviewY = windowHeight * 0.25;
+  limboPreviewWidthSize = windowWidth * 0.2;
+  limboPreviewHeightSize = windowHeight * 0.3;
 
   // Update plinko preview sizes and positions
-  plinkoPreviewX = windowWidth * 1/2 - windowWidth * 1/12;
-  plinkoPreviewY = windowHeight * 1/4;
-  plinkoPreviewWidthSize = windowWidth * 1/6;
-  plinkoPreviewHeightSize = windowHeight * 1/4;
+  plinkoPreviewX = windowWidth * 0.4 - windowWidth * 0.1;
+  plinkoPreviewY = windowHeight * 0.25;
+  plinkoPreviewWidthSize = windowWidth * 0.2;
+  plinkoPreviewHeightSize = windowHeight * 0.3;
 
   // Update mines preview sizes and positions
-  minesPreviewX = windowWidth * 5/6 - windowWidth * 1/6;
-  minesPreviewY = windowHeight * 1/4;
-  minesPreviewWidthSize = windowWidth * 1/6;
-  minesPreviewHeightSize = windowHeight * 1/4;
+  minesPreviewX = windowWidth * 0.75 - windowWidth * 0.1;
+  minesPreviewY = windowHeight * 0.25;
+  minesPreviewWidthSize = windowWidth * 0.2;
+  minesPreviewHeightSize = windowHeight * 0.3;
 }
