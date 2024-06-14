@@ -252,12 +252,21 @@ function mousePressed() {
 
 // Draw the limbo game interface
 function drawLimboGame() {
+  // Draw Limbo title
   background(220);
-
   textSize(40);
   textAlign(CENTER);
   fill(0);
   text("Limbo", windowWidth * 0.5, windowHeight * 0.1);
+
+  // Draw the screen
+  fill(255);
+  rect(windowWidth * 0.5 - 150, windowHeight * 0.3 - 50, 300, 200, 20);
+  fill(0);
+  textSize(50);
+  text(displayedNumber.toFixed(2), windowWidth * 0.5, windowHeight * 0.3 + 50);
+  
+
 
   if (!isBetPlaced) {
     // Show bet amount and target multiplier inputs
@@ -271,7 +280,7 @@ function drawLimboGame() {
 
     textSize(20);
     textAlign(RIGHT);
-    text("Bet Amount:", windowWidth * 0.3 - 10, windowHeight * 0.7 + 15);
+    text("Bet Amount:", windowWidth * 0.3 - 10, windowHeight * 0.7 + 10);
     text("Target Multiplier:", windowWidth * 0.3 - 10, windowHeight * 0.75 + 15);
 
     textSize(25);
@@ -281,23 +290,19 @@ function drawLimboGame() {
 
     textSize(25);
     textAlign(CENTER);
-    text("Bank: $" + bank.toFixed(2), windowWidth * 0.5, windowHeight * 0.1);
+    text("Bank: $" + bank.toFixed(2), windowWidth * 0.1, windowHeight * 0.1);
 
     // Check for enter key press to place bet
     if (keyIsPressed && key === "Enter") {
       placeBet();
     }
-  } else if (!gameOver) {
+  }
+  else if (!gameOver) {
     let elapsedTime = millis() - startTime;
     let progress = min(elapsedTime / 500, 1); // 500ms animation
 
     displayedNumber = lerp(1.00, nextNumber, progress);
 
-    fill(255);
-    rect(windowWidth * 0.5 - 150, windowHeight * 0.3 - 50, 300, 200, 20);
-    fill(0);
-    textSize(50);
-    text(displayedNumber.toFixed(2), windowWidth * 0.5, windowHeight * 0.3 + 50);
 
     if (progress >= 1) {
       gameOver = true;
@@ -305,14 +310,13 @@ function drawLimboGame() {
         winSound.play();
         let winnings = betAmount * targetMultiplier;
         bank += winnings;
-        text("You Win! " + targetMultiplier.toFixed(2) + " x " + targetMultiplier.toFixed(2), windowWidth * 0.5, windowHeight * 0.5);
-      } else {
+        text((targetMultiplier.toFixed(2)) + " x " + targetMultiplier.toFixed(2), windowWidth * 0.5, windowHeight * 0.5);
+      }
+      else {
         text("You Lose...", windowWidth * 0.5, windowHeight * 0.5);
       }
     }
-  } else {
-    text("Displayed Number: " + displayedNumber.toFixed(2), windowWidth * 0.5, windowHeight * 0.4);
-    text("Click to Play Again", windowWidth * 0.5, windowHeight * 0.6);
+  }
     if (mouseIsPressed) {
       isBetPlaced = false;
       betAmountInput.show();
@@ -322,7 +326,6 @@ function drawLimboGame() {
       doubleBetButton.show();
       halfMultiplierButton.show();
       doubleMultiplierButton.show();
-    }
   }
 }
 
