@@ -26,6 +26,13 @@ let payout = 0;
 let bank = 1000; // Initial bank amount
 let startTime; // Start time for animation
 
+// Mines game variables
+let minesGrid;
+let minesGridSize = 5; // 5x5 grid
+let minesCount = 5; // Number of mines
+let revealedCells;
+let minesGameOver = false;
+
 // HTML inputs and buttons
 let betAmountInput, targetMultiplierInput, betButton, halfBetButton, doubleBetButton, halfMultiplierButton, doubleMultiplierButton;
 
@@ -42,8 +49,8 @@ function preload() {
 function setup() {
   createCanvas(windowWidth, windowHeight);
   updatePreviewSizesAndPositions();
-  background(50)
-  
+  background(50);
+
   // Update canvas size on window resize
   window.addEventListener('resize', () => {
     resizeCanvas(windowWidth, windowHeight);
@@ -94,6 +101,28 @@ function setup() {
 
   // Initially hide inputs and buttons
   hideInputsAndButtons();
+  updateInputPositions(); // Update positions initially
+}
+
+function updatePreviewSizesAndPositions() {
+  let previewWidth = windowWidth * 0.25;
+  let previewHeight = previewWidth * 0.75;
+  let previewSpacing = windowWidth * 0.05;
+
+  limboPreviewWidthSize = previewWidth;
+  limboPreviewHeightSize = previewHeight;
+  limboPreviewX = previewSpacing;
+  limboPreviewY = windowHeight * 0.3;
+
+  plinkoPreviewWidthSize = previewWidth;
+  plinkoPreviewHeightSize = previewHeight;
+  plinkoPreviewX = limboPreviewX + previewWidth + previewSpacing;
+  plinkoPreviewY = windowHeight * 0.3;
+
+  minesPreviewWidthSize = previewWidth;
+  minesPreviewHeightSize = previewHeight;
+  minesPreviewX = plinkoPreviewX + previewWidth + previewSpacing;
+  minesPreviewY = windowHeight * 0.3;
 }
 
 function updateInputPositions() {
@@ -199,7 +228,6 @@ function getRandomMultiplier() {
   else if (rand < 70) return random(3.30, 4.95);
   else if (rand < 80) return random(4.95, 9.90);
   else if (rand < 90) return random(9.90, 99.00);
-  else return random(99.00, 1000.0);
 }
 
 // Draw function for different game states
@@ -219,12 +247,10 @@ function draw() {
   }
 }
 
-// Draw home screen with game previews
+// Draw the home screen with game previews
 function drawHomeScreen() {
-  // Background color
-  background(220);
-
-  // Displaying game previews
+  textSize(32);
+  fill(255);
   image(limboPreviewImage, limboPreviewX, limboPreviewY, limboPreviewWidthSize, limboPreviewHeightSize);
   image(plinkoPreviewImage, plinkoPreviewX, plinkoPreviewY, plinkoPreviewWidthSize, plinkoPreviewHeightSize);
   image(minesPreviewImage, minesPreviewX, minesPreviewY, minesPreviewWidthSize, minesPreviewHeightSize);
@@ -237,16 +263,61 @@ function drawHomeScreen() {
 
 // Determine if a game's preview has been clicked
 function mousePressed() {
-  if (mouseX > limboPreviewX && mouseX < limboPreviewX + limboPreviewWidthSize &&
-      mouseY > limboPreviewY && mouseY < limboPreviewY + limboPreviewHeightSize) {
-    gameState = "limbo";
-    showInputsAndButtons();
-  } else if (mouseX > plinkoPreviewX && mouseX < plinkoPreviewX + plinkoPreviewWidthSize &&
-      mouseY > plinkoPreviewY && mouseY < plinkoPreviewY + plinkoPreviewHeightSize) {
-    gameState = "plinko";
-  } else if (mouseX > minesPreviewX && mouseX < minesPreviewX + minesPreviewWidthSize &&
-      mouseY > minesPreviewY && mouseY < minesPreviewY + minesPreviewHeightSize) {
-    gameState = "mines";
+  if (gameState === "home") {
+    if (mouseX > limboPreviewX && mouseX < limboPreviewX + limboPreviewWidthSize &&
+        mouseY > limboPreviewY && mouseY < limboPreviewY + limboPreviewHeightSize) {
+      gameState = "limbo";
+      showInputsAndButtons();
+    } else if (mouseX > plinkoPreviewX && mouseX < plinkoPreviewX + plinkoPreviewWidthSize &&
+        mouseY > plinkoPreviewY && mouseY < plinkoPreviewY + plinkoPreviewHeightSize) {
+      gameState = "plinko";
+    } else if (mouseX > minesPreviewX && mouseX < minesPreviewX + minesPreviewWidthSize &&
+        mouseY > minesPreviewY && mouseY < minesPreviewY + minesPreviewHeightSize) {
+      gameState = "mines";
+      initializeMinesGame();
+    }
+  } else if (gameState === "mines" && !minesGameOver) {
+    let gridSize = min(windowWidth, windowHeight) * 0.8;
+    let cellSize = gridSize / minesGridSize;
+    let offsetX = (windowWidth - gridSize) / 2;
+    let offsetY = (windowHeight - gridSize) / 2;
+
+    let x = floor((mouseX - offsetX) / cellSize);
+    let y = floor((mouseY - offsetY) / cellSize);
+
+    if (x >= 0 && x < minesGridSize && y >= 0 && y < minesGridSize) {
+      revealedCells[x][y] = true;
+      if (minesGrid[x][y] === 1) {
+        minesGameOver = true;
+      }
+    }
+  }
+}
+
+// Initialize Mines game
+function initializeMinesGame() {
+  minesGrid = [];
+  revealedCells = [];
+  minesGameOver = false;
+
+  // Create grid and place mines
+  for (let i = 0; i < minesGridSize; i++) {
+    minesGrid[i] = [];
+    revealedCells[i] = [];
+    for (let j = 0; j < minesGridSize; j++) {
+      minesGrid[i][j] = 0;
+      revealedCells[i][j] = false;
+    }
+  }
+
+  let placedMines = 0;
+  while (placedMines < minesCount) {
+    let x = floor(random(minesGridSize));
+    let y = floor(random(minesGridSize));
+    if (minesGrid[x][y] === 0) {
+      minesGrid[x][y] = 1;
+      placedMines++;
+    }
   }
 }
 
@@ -265,100 +336,48 @@ function drawLimboGame() {
   fill(0);
   textSize(50);
   text(displayedNumber.toFixed(2), windowWidth * 0.5, windowHeight * 0.3 + 50);
-  
+
+  textSize(20);
+  textAlign(RIGHT);
+  text("Bet Amount:", windowWidth * 0.3 - 10, windowHeight * 0.7 + 10);
+  text("Target Multiplier:", windowWidth * 0.3 - 10, windowHeight * 0.75 + 15);
+
+  textSize(25);
+  textAlign(CENTER);
+  text("Payout: $" + payout.toFixed(2), windowWidth * 0.5, windowHeight * 0.85);
+  text("Win Chance: " + winChance.toFixed(2) + "%", windowWidth * 0.5, windowHeight * 0.9);
+
+  textSize(25);
+  textAlign(CENTER);
+  text("Bank: $" + bank.toFixed(2), windowWidth * 0.1, windowHeight * 0.1);
 
 
-  if (!isBetPlaced) {
-    // Show bet amount and target multiplier inputs
+  if (!gameOver) {
+    let elapsedTime = millis() - startTime;
+    let progress = min(elapsedTime / 500); // 500ms animation
+
+    displayedNumber = lerp(1.00, nextNumber, progress);
+
+    if (progress >= 1 && nextNumber >= targetMultiplier) {
+      winSound.play();
+      let winnings = betAmount * targetMultiplier;
+      bank += winnings;
+      fill(0, 255, 0);
+      gameOver = true;
+      text("You Win $" + (winnings), windowWidth * 0.5, windowHeight * 0.6);
+    }
+    else if (progress >= 1 ) {
+      gameOver = true;
+    }
+  }
+
+  if (mouseIsPressed) {
     betAmountInput.show();
     targetMultiplierInput.show();
     betButton.show();
     halfBetButton.show();
-    doubleBetButton.show();
+    doubleBetButton.show()
     halfMultiplierButton.show();
     doubleMultiplierButton.show();
-
-    textSize(20);
-    textAlign(RIGHT);
-    text("Bet Amount:", windowWidth * 0.3 - 10, windowHeight * 0.7 + 10);
-    text("Target Multiplier:", windowWidth * 0.3 - 10, windowHeight * 0.75 + 15);
-
-    textSize(25);
-    textAlign(CENTER);
-    text("Payout: $" + payout.toFixed(2), windowWidth * 0.5, windowHeight * 0.85);
-    text("Win Chance: " + winChance.toFixed(2) + "%", windowWidth * 0.5, windowHeight * 0.9);
-
-    textSize(25);
-    textAlign(CENTER);
-    text("Bank: $" + bank.toFixed(2), windowWidth * 0.1, windowHeight * 0.1);
-
-    // Check for enter key press to place bet
-    if (keyIsPressed && key === "Enter") {
-      placeBet();
-    }
-  }
-  else if (!gameOver) {
-    let elapsedTime = millis() - startTime;
-    let progress = min(elapsedTime / 500, 1); // 500ms animation
-
-    displayedNumber = lerp(1.00, nextNumber, progress);
-
-
-    if (progress >= 1) {
-      gameOver = true;
-      if (nextNumber >= targetMultiplier) {
-        winSound.play();
-        let winnings = betAmount * targetMultiplier;
-        bank += winnings;
-        text((targetMultiplier.toFixed(2)) + " x " + targetMultiplier.toFixed(2), windowWidth * 0.5, windowHeight * 0.5);
-      }
-      else {
-        text("You Lose...", windowWidth * 0.5, windowHeight * 0.5);
-      }
-    }
-  }
-    if (mouseIsPressed) {
-      isBetPlaced = false;
-      betAmountInput.show();
-      targetMultiplierInput.show();
-      betButton.show();
-      halfBetButton.show();
-      doubleBetButton.show();
-      halfMultiplierButton.show();
-      doubleMultiplierButton.show();
   }
 }
-
-// Placeholder for Plinko game
-function drawPlinkoGame() {
-  background(100);
-  text("Plinko Game Coming Soon", windowWidth / 2, windowHeight / 2);
-}
-
-// Placeholder for Mines game
-function drawMinesGame() {
-  background(150);
-  text("Mines Game Coming Soon", windowWidth / 2, windowHeight / 2);
-}
-
-// Update preview sizes and positions based on window size
-function updatePreviewSizesAndPositions() {
-  // Update limbo preview sizes and positions
-  limboPreviewX = windowWidth * 0.15;
-  limboPreviewY = windowHeight * 0.25;
-  limboPreviewWidthSize = windowWidth * 0.2;
-  limboPreviewHeightSize = windowHeight * 0.3;
-
-  // Update plinko preview sizes and positions
-  plinkoPreviewX = windowWidth * 0.4 - windowWidth * 0.1;
-  plinkoPreviewY = windowHeight * 0.25;
-  plinkoPreviewWidthSize = windowWidth * 0.2;
-  plinkoPreviewHeightSize = windowHeight * 0.3;
-
-  // Update mines preview sizes and positions
-  minesPreviewX = windowWidth * 0.75 - windowWidth * 0.1;
-  minesPreviewY = windowHeight * 0.25;
-  minesPreviewWidthSize = windowWidth * 0.2;
-  minesPreviewHeightSize = windowHeight * 0.3;
-}
-
